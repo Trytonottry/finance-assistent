@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Аналитика</h2>
+
+<div class="row">
+  <div class="col-md-6">
+    <h4>Расходы по категориям</h4>
+    <canvas id="expensesPie"></canvas>
+  </div>
+  <div class="col-md-6">
+    <h4>Доходы vs Расходы по месяцам</h4>
+    <canvas id="monthlyBar"></canvas>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-12">
+    <h4>Прогноз баланса (6 мес)</h4>
+    <canvas id="forecastLine"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const expensesByCategory = {{ expenses_by_category | safe }};
+  const monthlySummary = {{ monthly_summary | safe }};
+  const forecast = {{ forecast | safe }};
+
+  new Chart(document.getElementById('expensesPie'), {
+    type: 'pie',
+    data: {
+      labels: expensesByCategory.labels,
+      datasets: [{
+        data: expensesByCategory.values,
+        backgroundColor: ['#ff6384','#36a2eb','#ffcd56','#4bc0c0','#9966ff','#ff9f40']
+      }]
+    }
+  });
+
+  new Chart(document.getElementById('monthlyBar'), {
+    type: 'bar',
+    data: {
+      labels: monthlySummary.labels,
+      datasets: [
+        {
+          label: 'Доходы',
+          data: monthlySummary.incomes,
+          backgroundColor: '#36a2eb'
+        },
+        {
+          label: 'Расходы',
+          data: monthlySummary.expenses,
+          backgroundColor: '#ff6384'
+        }
+      ]
+    }
+  });
+
+  new Chart(document.getElementById('forecastLine'), {
+    type: 'line',
+    data: {
+      labels: forecast.labels,
+      datasets: [{
+        label: 'Баланс',
+        data: forecast.values,
+        borderColor: '#4bc0c0',
+        fill: false
+      }]
+    }
+  });
+</script>
+{% endblock %}
